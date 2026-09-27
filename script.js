@@ -229,30 +229,28 @@ if (current === 0) {
 
 let index = 0;
 
-    function playCurrent() {
+function playCurrent() {
 
-        if (index >= playOrder.length) return;
-
-        const mediaElement = media[playOrder[index]];
-
-        if (!mediaElement) {
-            index++;
-            playCurrent();
-            return;
-        }
-
-        mediaElement.play().catch(err => console.log(err));
-
-        mediaElement.onended = () => {
-            index++;
-            playCurrent();
-        };
-
+    if (index >= playOrder.length) {
+        index = 0;
     }
 
-    playCurrent();
-    
-}    
+    const mediaElement = media[playOrder[index]];
+
+    if (!mediaElement) {
+        index++;
+        playCurrent();
+        return;
+    }
+
+    mediaElement.play().catch(err => console.log(err));
+
+    mediaElement.onended = () => {
+        index++;
+        playCurrent();
+    };
+
+}
     
 function pick(sortType) {
     
