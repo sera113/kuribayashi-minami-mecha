@@ -1,5 +1,5 @@
 const config = {
-    localStoragePrefix: "絶対変える",
-    title: "適当",
+    localStoragePrefix: "kuribayashi minami mecha",
+    title: "Kuribayashi Minami Mecha",
     description: "-"
 };
