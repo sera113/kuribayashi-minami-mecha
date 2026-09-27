@@ -194,10 +194,13 @@ favoriteButton.addEventListener("click", (e) => {
 function autoPlaySequential(leftId, rightId) {
     if (!autoPlay) return;
 
-    const media = document.querySelectorAll(".music-card audio, .music-card video");
+    const media = document.querySelectorAll(
+        ".music-card audio, .music-card video"
+    );
 
     if (media.length === 0) return;
 
+    // 2曲とも停止して最初に戻す
     media.forEach(m => {
         m.pause();
         m.currentTime = 0;
@@ -205,51 +208,60 @@ function autoPlaySequential(leftId, rightId) {
 
     let current;
 
+    // 新しく出てきた曲を最初に再生
     if (leftId !== previousLeftId) {
-
         current = 0;
-
     } else if (rightId !== previousRightId) {
-
         current = 1;
-
     } else {
-
         current = 0;
-
-}
-
-    let playOrder;
-
-if (current === 0) {
-    playOrder = [0, 1];
-} else {
-    playOrder = [1, 0];
-}
-
-let index = 0;
-
-function playCurrent() {
-
-    if (index >= playOrder.length) {
-        index = 0;
     }
 
-    const mediaElement = media[playOrder[index]];
+    const playOrder = current === 0
+        ? [0, 1]
+        : [1, 0];
 
-    if (!mediaElement) {
-        index++;
-        playCurrent();
-        return;
+    let index = 0;
+
+    function playCurrent() {
+
+        // 2曲終わったら最初に戻る
+        if (index >= playOrder.length) {
+            index = 0;
+        }
+
+        const mediaElement = media[playOrder[index]];
+
+        if (!mediaElement) {
+            index++;
+            playCurrent();
+            return;
+        }
+
+        console.log(
+            "Autoplay:",
+            playOrder[index] === 0 ? "LEFT" : "RIGHT"
+        );
+
+        mediaElement.currentTime = 0;
+
+        const playPromise = mediaElement.play();
+
+        if (playPromise !== undefined) {
+            playPromise.catch(err => {
+                console.log("Autoplay failed:", err);
+            });
+        }
+
+        mediaElement.onended = function () {
+            console.log("Ended");
+
+            index++;
+            playCurrent();
+        };
     }
 
-    mediaElement.play().catch(err => console.log(err));
-
-    mediaElement.onended = () => {
-        index++;
-        playCurrent();
-    };
-
+    playCurrent();
 }
     
 function pick(sortType) {
